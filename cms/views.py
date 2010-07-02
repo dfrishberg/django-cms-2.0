@@ -13,6 +13,7 @@ from django.conf import settings as django_settings
 from cms.utils.i18n import get_fallback_languages
 from cms.exceptions import NoHomeFound
 from cms.apphook_pool import apphook_pool
+from cms.models.pagemodel import Page
 
 def get_current_page(path, lang, queryset, home_slug=None, home_tree_id=None):
     """Helper for getting current page from path depending on language
@@ -60,7 +61,7 @@ def details(request, page_id=None, slug=None, template_name=settings.CMS_TEMPLAT
     
     lang = get_language_from_request(request)
     site = Site.objects.get_current()
-    if 'preview' in request.GET.keys():
+    if 'preview' in request.GET.keys() and request.user.has_perm(Page._meta.app_label + ' ' + Page._meta.get_change_permission()):
         pages = page_queryset.filter(site=site)
     else:
         pages = page_queryset.published().filter(site=site)
